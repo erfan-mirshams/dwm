@@ -1,4 +1,8 @@
 /* See LICENSE file for copyright and license details. */
+/* key definitions */
+#define XF86AudioRaiseVolume 0x1008ff13
+#define XF86AudioLowerVolume 0x1008ff11
+#define XF86AudioMute 0x1008ff12
 
 /* appearance */
 static const unsigned int borderpx  = 3;        /* border pixel of windows */
@@ -68,11 +72,17 @@ static const char *calculator[] = {"speedcrunch", NULL};
 static const char *file_browser[] = {"st", "-e", "lf", NULL};
 static const char *instant_messenger[] = {"telegram-desktop", NULL};
 static const char *change_keyboard_layout[] = {"ch-keyboard-layout", NULL};
+static const char *increase_volume[] = {"vol-increase", NULL};
+static const char *decrease_volume[] = {"vol-decrease", NULL};
+static const char *toggle_mute_volume[] = {"vol-mute-toggle", NULL};
 
 
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
+	{ 0,                            XF86AudioLowerVolume,      spawn,          {.v = decrease_volume } },
+	{ 0,                            XF86AudioRaiseVolume,      spawn,          {.v = increase_volume } },
+	{ 0,                            XF86AudioMute,             spawn,          {.v = toggle_mute_volume} },
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY|ShiftMask,             XK_w,      spawn,          {.v = normie_browser} },
