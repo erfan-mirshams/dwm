@@ -59,11 +59,29 @@ static const Layout layouts[] = {
 static char dmenumon[2] = "0"; /* component of dmenucmd, manipulated in spawn() */
 static const char *dmenucmd[] = { "dmenu_run", "-m", dmenumon, "-fn", dmenufont, "-nb", col_gray1, "-nf", col_gray3, "-sb", col_cyan, "-sf", col_gray4, NULL };
 static const char *termcmd[]  = { "st", NULL };
+static const char *normie_browser[] = {"firefox", "-p", "normie-browsing", NULL};
+static const char *web_browser[] = {"firefox", NULL};
+static const char *text_editor[] = {"emacsclient", "-c", "-a", "emacs", NULL};
+static const char *task_manager[] = {"st", "-e", "htop", NULL};
+static const char *network_manager[] = {"st", "-e", "nmtui", NULL};
+static const char *calculator[] = {"speedcrunch", NULL};
+static const char *file_browser[] = {"st", "-e", "lf", NULL};
+static const char *instant_messenger[] = {"telegram-desktop", NULL};
+
+
 
 static const Key keys[] = {
 	/* modifier                     key        function        argument */
 	{ MODKEY,                       XK_p,      spawn,          {.v = dmenucmd } },
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
+	{ MODKEY|ShiftMask,             XK_w,      spawn,          {.v = normie_browser} },
+	{ MODKEY,                       XK_w,      spawn,          {.v = web_browser} },
+	{ MODKEY,                       XK_e,      spawn,          {.v = text_editor} },
+	{ MODKEY|ShiftMask,             XK_t,      spawn,          {.v = task_manager} },
+	{ MODKEY,                       XK_n,      spawn,          {.v = network_manager} },
+	{ MODKEY,                       XK_c,      spawn,          {.v = calculator} },
+	{ MODKEY,                       XK_v,      spawn,          {.v = file_browser} },
+	{ MODKEY|ShiftMask,             XK_m,      spawn,          {.v = instant_messenger} },
 	{ MODKEY,                       XK_b,      togglebar,      {0} },
 	{ MODKEY,                       XK_j,      focusstack,     {.i = +1 } },
 	{ MODKEY,                       XK_k,      focusstack,     {.i = -1 } },
