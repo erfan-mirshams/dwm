@@ -81,6 +81,7 @@ static const char *change_keyboard_layout[] = {"ch-keyboard-layout", NULL};
 static const char *increase_volume[] = {"vol-increase", NULL};
 static const char *decrease_volume[] = {"vol-decrease", NULL};
 static const char *toggle_mute_volume[] = {"vol-mute-toggle", NULL};
+static const char *screen_shot_utility[] = {"flameshot", "launcher", NULL};
 
 
 
@@ -93,6 +94,7 @@ static const Key keys[] = {
 	{ MODKEY|ShiftMask,             XK_Return, spawn,          {.v = termcmd } },
 	{ MODKEY|ShiftMask,             XK_w,      spawn,          {.v = normie_browser} },
 	{ MODKEY,                       XK_w,      spawn,          {.v = web_browser} },
+	{ MODKEY|ShiftMask,             XK_p,      spawn,          {.v = screen_shot_utility} },
 	{ MODKEY,                       XK_e,      spawn,          {.v = text_editor} },
 	{ MODKEY|ShiftMask,             XK_t,      spawn,          {.v = task_manager} },
 	{ MODKEY,                       XK_n,      spawn,          {.v = network_manager} },
