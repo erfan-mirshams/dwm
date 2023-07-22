@@ -92,6 +92,7 @@ enum {
   NetWMWindowType,
   NetWMWindowTypeDialog,
   NetClientList,
+  NetClientInfo,
   NetLast
 };                                           /* EWMH atoms */
 enum { Manager, Xembed, XembedInfo, XLast }; /* Xembed atoms */
@@ -271,6 +272,7 @@ static int sendevent(Window w, Atom proto, int m, long d0, long d1, long d2,
                      long d3, long d4);
 static void sendmon(Client *c, Monitor *m);
 static void setclientstate(Client *c, long state);
+static void setclienttagprop(Client *c);
 static void setfocus(Client *c);
 static void setfullscreen(Client *c, int fullscreen);
 static void setgaps(const Arg *arg);
@@ -508,9 +510,16 @@ void buttonpress(XEvent *e) {
   }
   if (ev->window == selmon->barwin) {
     i = x = 0;
-    do
+
+    unsigned int occ = 0;
+    for (c = m->clients; c; c = c->next)
+      occ |= c->tags;
+    do {
+      /* Do not reserve space for vacant tags */
+      if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
+        continue;
       x += TEXTW(tags[i]);
-    while (ev->x >= x && ++i < LENGTH(tags));
+    } while (ev->x >= x && ++i < LENGTH(tags));
     if (i < LENGTH(tags)) {
       click = ClkTagBar;
       arg.ui = 1 << i;
@@ -853,14 +862,13 @@ void drawbar(Monitor *m) {
   }
   x = 0;
   for (i = 0; i < LENGTH(tags); i++) {
+    /* Do not draw vacant tags */
+    if (!(occ & 1 << i || m->tagset[m->seltags] & 1 << i))
+      continue;
     w = TEXTW(tags[i]);
     drw_setscheme(
         drw, scheme[m->tagset[m->seltags] & 1 << i ? SchemeSel : SchemeNorm]);
     drw_text(drw, x, 0, w, bh, lrpad / 2, tags[i], urg & 1 << i);
-    if (occ & 1 << i)
-      drw_rect(drw, x + boxs, boxs, boxw, boxw,
-               m == selmon && selmon->sel && selmon->sel->tags & 1 << i,
-               urg & 1 << i);
     x += w;
   }
   w = TEXTW(m->ltsymbol);
@@ -1227,6 +1235,28 @@ void manage(Window w, XWindowAttributes *wa) {
   updatewindowtype(c);
   updatesizehints(c);
   updatewmhints(c);
+  {
+    int format;
+    unsigned long *data, n, extra;
+    Monitor *m;
+    Atom atom;
+    if (XGetWindowProperty(dpy, c->win, netatom[NetClientInfo], 0L, 2L, False,
+                           XA_CARDINAL, &atom, &format, &n, &extra,
+                           (unsigned char **)&data) == Success &&
+        n == 2) {
+      c->tags = *data;
+      for (m = mons; m; m = m->next) {
+        if (m->num == *(data + 1)) {
+          c->mon = m;
+          break;
+        }
+      }
+    }
+    if (n > 0)
+      XFree(data);
+  }
+  setclienttagprop(c);
+
   XSelectInput(dpy, w,
                EnterWindowMask | FocusChangeMask | PropertyChangeMask |
                    StructureNotifyMask);
@@ -1613,6 +1643,7 @@ void sendmon(Client *c, Monitor *m) {
   c->tags = m->tagset[m->seltags]; /* assign tags of target monitor */
   attach(c);
   attachstack(c);
+  setclienttagprop(c);
   focus(NULL);
   arrange(NULL);
 }
@@ -1779,6 +1810,7 @@ void setup(void) {
   netatom[NetWMWindowTypeDialog] =
       XInternAtom(dpy, "_NET_WM_WINDOW_TYPE_DIALOG", False);
   netatom[NetClientList] = XInternAtom(dpy, "_NET_CLIENT_LIST", False);
+  netatom[NetClientInfo] = XInternAtom(dpy, "_NET_CLIENT_INFO", False);
   xatom[Manager] = XInternAtom(dpy, "MANAGER", False);
   xatom[Xembed] = XInternAtom(dpy, "_XEMBED", False);
   xatom[XembedInfo] = XInternAtom(dpy, "_XEMBED_INFO", False);
@@ -1807,6 +1839,7 @@ void setup(void) {
   XChangeProperty(dpy, root, netatom[NetSupported], XA_ATOM, 32,
                   PropModeReplace, (unsigned char *)netatom, NetLast);
   XDeleteProperty(dpy, root, netatom[NetClientList]);
+  XDeleteProperty(dpy, root, netatom[NetClientInfo]);
   /* select events */
   wa.cursor = cursor[CurNormal]->cursor;
   wa.event_mask = SubstructureRedirectMask | SubstructureNotifyMask |
@@ -1866,9 +1899,19 @@ void spawn(const Arg *arg) {
   }
 }
 
+void setclienttagprop(Client *c) {
+  long data[] = {(long)c->tags, (long)c->mon->num};
+  XChangeProperty(dpy, c->win, netatom[NetClientInfo], XA_CARDINAL, 32,
+                  PropModeReplace, (unsigned char *)data, 2);
+}
+
 void tag(const Arg *arg) {
+  Client *c;
   if (selmon->sel && arg->ui & TAGMASK) {
+
+    c = selmon->sel;
     selmon->sel->tags = arg->ui & TAGMASK;
+    setclienttagprop(c);
     focus(NULL);
     arrange(selmon);
   }
@@ -1948,6 +1991,7 @@ void toggletag(const Arg *arg) {
   newtags = selmon->sel->tags ^ (arg->ui & TAGMASK);
   if (newtags) {
     selmon->sel->tags = newtags;
+    setclienttagprop(selmon->sel);
     focus(NULL);
     arrange(selmon);
   }
