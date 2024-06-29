@@ -20,10 +20,11 @@ static const int systraypinningfailfirst =
 static const int showsystray = 1; /* 0 means no systray */
 static const int showbar = 1;     /* 0 means no bar */
 static const int topbar = 1;      /* 0 means bottom bar */
-static char font[] = "DejavuSansMono:size=10";
-static const char *fonts[] = {font, "NotoColorEmoji:pixelsize=25",
-                              "fontawesome-webfont:pixelsize=32"};
-static const char dmenufont[] = "DejavuSansMono:size=10";
+static char font[] = "DejaVu Sans Mono:size=10";
+static const char *fonts[] = {font, "Noto Color Emoji:pixelsize=25",
+                              "JoyPixels:pixelsize=25",
+                              "FontAwesome:style=Regular:pixelsize=32"};
+static const char dmenufont[] = "DejaVu Sans Mono:size=10";
 static char normbgcolor[] = "#222222";
 static char normbordercolor[] = "#444444";
 static char normfgcolor[] = "#bbbbbb";
@@ -85,6 +86,10 @@ static const char *dmenucmd[] = {
     "dmenu_run", "-c",       "-l",  "5",         "-m",  dmenumon,
     "-fn",       dmenufont,  "-nb", normbgcolor, "-nf", normfgcolor,
     "-sb",       selbgcolor, "-sf", selfgcolor,  NULL};
+static const char *passmenucmd[] = {
+    "passmenu-otp", "-c",       "-l",  "5",         "-m",  dmenumon,
+    "-fn",      dmenufont,  "-nb", normbgcolor, "-nf", normfgcolor,
+    "-sb",      selbgcolor, "-sf", selfgcolor,  NULL};
 static const char *termcmd[] = {"st", NULL};
 static const char *normie_browser[] = {"firefox", "-p", "normie-browsing",
                                        NULL};
@@ -128,6 +133,7 @@ static const Key keys[] = {
     {0, XF86AudioRaiseVolume, spawn, {.v = increase_volume}},
     {0, XF86AudioMute, spawn, {.v = toggle_mute_volume}},
     {MODKEY, XK_p, spawn, {.v = dmenucmd}},
+    {MODKEY, XK_s, spawn, {.v = passmenucmd}},
     {MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
     {MODKEY | ShiftMask, XK_w, spawn, {.v = normie_browser}},
     {MODKEY, XK_w, spawn, {.v = web_browser}},
