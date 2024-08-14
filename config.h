@@ -21,9 +21,9 @@ static const int showsystray = 1; /* 0 means no systray */
 static const int showbar = 1;     /* 0 means no bar */
 static const int topbar = 1;      /* 0 means bottom bar */
 static char font[] = "DejaVu Sans Mono:size=10";
-static const char *fonts[] = {font, "Noto Color Emoji:pixelsize=25",
-                              "JoyPixels:pixelsize=25",
-                              "FontAwesome:style=Regular:pixelsize=32"};
+static const char *fonts[] = {font, "Noto Color Emoji:pixelsize=16",
+                              "JoyPixels:pixelsize=20",
+                              "FontAwesome:style=Regular:pixelsize=20"};
 static const char dmenufont[] = "DejaVu Sans Mono:size=10";
 static char normbgcolor[] = "#222222";
 static char normbordercolor[] = "#444444";
@@ -88,6 +88,10 @@ static const char *dmenucmd[] = {
     "-sb",       selbgcolor, "-sf", selfgcolor,  NULL};
 static const char *passmenucmd[] = {
     "passmenu-otp", "-c",       "-l",  "5",         "-m",  dmenumon,
+    "-fn",          dmenufont,  "-nb", normbgcolor, "-nf", normfgcolor,
+    "-sb",          selbgcolor, "-sf", selfgcolor,  NULL};
+static const char *clipmenucmd[] = {
+    "clipmenu", "-c",       "-l",  "5",         "-m",  dmenumon,
     "-fn",      dmenufont,  "-nb", normbgcolor, "-nf", normfgcolor,
     "-sb",      selbgcolor, "-sf", selfgcolor,  NULL};
 static const char *termcmd[] = {"st", NULL};
@@ -97,6 +101,7 @@ static const char *web_browser[] = {"firefox", NULL};
 static const char *text_editor[] = {"emacsclient", "-c", "-a", "emacs", NULL};
 static const char *task_manager[] = {"st", "-e", "htop", NULL};
 static const char *network_manager[] = {"st", "-e", "nmtui", NULL};
+static const char *kubernetes_client[] = {"st", "-e", "k9s", NULL};
 static const char *calculator[] = {"speedcrunch", NULL};
 static const char *file_browser[] = {"st", "-e", "lf", NULL};
 static const char *instant_messenger[] = {"telegram-desktop", NULL};
@@ -105,6 +110,7 @@ static const char *increase_volume[] = {"vol-increase", NULL};
 static const char *decrease_volume[] = {"vol-decrease", NULL};
 static const char *toggle_mute_volume[] = {"vol-mute-toggle", NULL};
 static const char *screen_shot_utility[] = {"flameshot", "launcher", NULL};
+static const char *lockscreen_cmd[] = {"betterlockscreen", "-l", NULL};
 
 /*
  * Xresources preferences to load at startup
@@ -134,12 +140,15 @@ static const Key keys[] = {
     {0, XF86AudioMute, spawn, {.v = toggle_mute_volume}},
     {MODKEY, XK_p, spawn, {.v = dmenucmd}},
     {MODKEY, XK_s, spawn, {.v = passmenucmd}},
+    {MODKEY, XK_o, spawn, {.v = clipmenucmd}},
     {MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
     {MODKEY | ShiftMask, XK_w, spawn, {.v = normie_browser}},
+    {MODKEY | ShiftMask, XK_l, spawn, {.v = lockscreen_cmd}},
     {MODKEY, XK_w, spawn, {.v = web_browser}},
     {MODKEY | ShiftMask, XK_p, spawn, {.v = screen_shot_utility}},
     {MODKEY, XK_e, spawn, {.v = text_editor}},
     {MODKEY | ShiftMask, XK_t, spawn, {.v = task_manager}},
+    {MODKEY | ShiftMask, XK_k, spawn, {.v = kubernetes_client}},
     {MODKEY, XK_n, spawn, {.v = network_manager}},
     {MODKEY, XK_c, spawn, {.v = calculator}},
     {MODKEY, XK_v, spawn, {.v = file_browser}},
