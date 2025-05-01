@@ -3,6 +3,8 @@
 #define XF86AudioRaiseVolume 0x1008ff13
 #define XF86AudioLowerVolume 0x1008ff11
 #define XF86AudioMute 0x1008ff12
+#define XF86MonBrightnessUp 0x1008ff02
+#define XF86MonBrightnessDown 0x1008ff03
 
 /* appearance */
 static const unsigned int borderpx = 7; /* border pixel of windows */
@@ -95,9 +97,8 @@ static const char *clipmenucmd[] = {
     "-fn",      dmenufont,  "-nb", normbgcolor, "-nf", normfgcolor,
     "-sb",      selbgcolor, "-sf", selfgcolor,  NULL};
 static const char *termcmd[] = {"st", NULL};
-static const char *normie_browser[] = {"firefox", "-p", "normie-browsing",
-                                       NULL};
-static const char *web_browser[] = {"firefox", NULL};
+static const char *web_browser[] = {"zen-browser", NULL};
+static const char *normie_browser[] = {"chromium", NULL};
 static const char *text_editor[] = {"emacsclient", "-c", "-a", "emacs", NULL};
 static const char *task_manager[] = {"st", "-e", "htop", NULL};
 static const char *network_manager[] = {"st", "-e", "nmtui", NULL};
@@ -109,8 +110,10 @@ static const char *change_keyboard_layout[] = {"ch-keyboard-layout", NULL};
 static const char *increase_volume[] = {"vol-increase", NULL};
 static const char *decrease_volume[] = {"vol-decrease", NULL};
 static const char *toggle_mute_volume[] = {"vol-mute-toggle", NULL};
+static const char *increase_brightness[] = {"brightness-increase", NULL};
+static const char *decrease_brightness[] = {"brightness-decrease", NULL};
 static const char *screen_shot_utility[] = {"flameshot", "launcher", NULL};
-static const char *lockscreen_cmd[] = {"betterlockscreen", "-l", NULL};
+static const char *lockscreen_cmd[] = {"slock", NULL};
 static const char *divar_programs[] = {"divar-programs", NULL};
 
 /*
@@ -139,13 +142,15 @@ static const Key keys[] = {
     {0, XF86AudioLowerVolume, spawn, {.v = decrease_volume}},
     {0, XF86AudioRaiseVolume, spawn, {.v = increase_volume}},
     {0, XF86AudioMute, spawn, {.v = toggle_mute_volume}},
+    {0, XF86MonBrightnessDown, spawn, {.v = decrease_brightness}},
+    {0, XF86MonBrightnessUp, spawn, {.v = increase_brightness}},
     {MODKEY, XK_p, spawn, {.v = dmenucmd}},
     {MODKEY, XK_s, spawn, {.v = passmenucmd}},
     {MODKEY, XK_o, spawn, {.v = clipmenucmd}},
     {MODKEY | ShiftMask, XK_Return, spawn, {.v = termcmd}},
-    {MODKEY | ShiftMask, XK_w, spawn, {.v = normie_browser}},
     {MODKEY | ShiftMask, XK_l, spawn, {.v = lockscreen_cmd}},
     {MODKEY, XK_w, spawn, {.v = web_browser}},
+    {MODKEY | ShiftMask, XK_w, spawn, {.v = normie_browser}},
     {MODKEY | ShiftMask, XK_p, spawn, {.v = screen_shot_utility}},
     {MODKEY, XK_e, spawn, {.v = text_editor}},
     {MODKEY | ShiftMask, XK_t, spawn, {.v = task_manager}},
